@@ -34,10 +34,10 @@
             </exclusions>
         </dependency>
 
-        <!--邮件发送-->
+        <!--邮件发送（Spring Boot 3.x 使用 Jakarta Mail，通过 starter 引入）-->
         <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>javax.mail</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
 
         <!--企业微信发送消息-->

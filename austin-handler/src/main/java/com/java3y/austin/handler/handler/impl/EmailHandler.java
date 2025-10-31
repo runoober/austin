@@ -17,7 +17,6 @@ import com.java3y.austin.handler.flowcontrol.FlowControlParam;
 import com.java3y.austin.handler.handler.BaseHandler;
 import com.java3y.austin.support.utils.AccountUtils;
 import com.java3y.austin.support.utils.AustinFileUtils;
-import com.sun.mail.util.MailSSLSocketFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -80,9 +79,11 @@ public class EmailHandler extends BaseHandler{
     private MailAccount getAccountConfig(Integer sendAccount) {
         MailAccount account = accountUtils.getAccountById(sendAccount, MailAccount.class);
         try {
-            MailSSLSocketFactory sf = new MailSSLSocketFactory();
-            sf.setTrustAllHosts(true);
-            account.setAuth(account.isAuth()).setStarttlsEnable(account.isStarttlsEnable()).setSslEnable(account.isSslEnable()).setCustomProperty("mail.smtp.ssl.socketFactory", sf);
+            account.setAuth(account.isAuth())
+                    .setStarttlsEnable(account.isStarttlsEnable())
+                    .setSslEnable(account.isSslEnable())
+                    .setCustomProperty("mail.smtp.ssl.trust", "*")  // 信任所有主机
+                    .setCustomProperty("mail.smtp.ssl.checkserveridentity", "false");  // 禁用服务器身份验证
             account.setTimeout(25000).setConnectionTimeout(25000);
         } catch (Exception e) {
             log.error("EmailHandler#getAccount fail!{}", Throwables.getStackTraceAsString(e));

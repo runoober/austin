@@ -1,10 +1,10 @@
 package com.java3y.austin.cron.config;
 
 import cn.hutool.core.thread.ExecutorBuilder;
-import com.dtp.common.em.QueueTypeEnum;
-import com.dtp.common.em.RejectedTypeEnum;
-import com.dtp.core.thread.DtpExecutor;
-import com.dtp.core.thread.ThreadPoolBuilder;
+import org.dromara.dynamictp.common.em.QueueTypeEnum;
+import org.dromara.dynamictp.common.em.RejectedTypeEnum;
+import org.dromara.dynamictp.core.executor.DtpExecutor;
+import org.dromara.dynamictp.core.support.ThreadPoolBuilder;
 import com.java3y.austin.common.constant.ThreadPoolConstant;
 
 import java.util.concurrent.ExecutorService;

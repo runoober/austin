@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.6</version>
+        <version>3.5.7</version>
         <relativePath/>
     </parent>
 
@@ -35,23 +35,22 @@
         <revision>0.0.1-SNAPSHOT</revision>
 
         <!--构建配置-->
-        <java.version>1.8</java.version>
-        <target.java.version>1.8</target.java.version>
+        <java.version>25</java.version>
+        <target.java.version>25</target.java.version>
         <maven.compiler.source>${target.java.version}</maven.compiler.source>
         <maven.compiler.target>${target.java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!--依赖库版本-->
-        <mysql-connector-java.version>5.1.35</mysql-connector-java.version>
+        <mysql-connector-java.version>8.0.33</mysql-connector-java.version>
         <hutool-all.version>5.7.15</hutool-all.version>
-        <guava.version>31.0.1-jre</guava.version>
+        <guava.version>33.5.0-jre</guava.version>
         <okhttp.version>4.9.2</okhttp.version>
         <fastjson2.version>2.0.60</fastjson2.version>
         <tencentcloud-sdk-java.version>3.1.510</tencentcloud-sdk-java.version>
         <nacos-config-spring-boot-starter.version>0.2.12</nacos-config-spring-boot-starter.version>
         <apollo-client.version>2.1.0</apollo-client.version>
         <log-record-starter.version>1.0.4.1</log-record-starter.version>
-        <javax.mail.version>1.6.2</javax.mail.version>
         <springfox-boot-starter.version>3.0.0</springfox-boot-starter.version>
         <logback-gelf.version>3.0.0</logback-gelf.version>
         <xxl-job-core.version>2.3.0</xxl-job-core.version>
@@ -61,7 +60,7 @@
         <flink-table-api-java-bridge.version>1.16.0</flink-table-api-java-bridge.version>
         <hive-exec.version>2.3.4</hive-exec.version>
         <weixin-java>4.5.3.B</weixin-java>
-        <dynamic-tp-spring-boot-starter-apollo.version>1.0.2</dynamic-tp-spring-boot-starter-apollo.version>
+        <dynamic-tp-spring-boot-starter-apollo.version>1.2.2-x</dynamic-tp-spring-boot-starter-apollo.version>
         <alipay-sdk-java.version>4.39.19.ALL</alipay-sdk-java.version>
         <alibaba-dingtalk-service-sdk.version>2.0.0</alibaba-dingtalk-service-sdk.version>
         <rocketmq-spring-boot-starter.version>2.2.2</rocketmq-spring-boot-starter.version>
@@ -187,13 +186,6 @@
                 <version>${log-record-starter.version}</version>
             </dependency>
 
-            <!--邮件发送-->
-            <dependency>
-                <groupId>com.sun.mail</groupId>
-                <artifactId>javax.mail</artifactId>
-                <version>${javax.mail.version}</version>
-            </dependency>
-
             <!--swagger-->
             <dependency>
                 <groupId>io.springfox</groupId>
@@ -279,7 +271,7 @@
 
             <!--动态线程池引入-->
             <dependency>
-                <groupId>io.github.lyh200</groupId>
+                <groupId>org.dromara.dynamictp</groupId>
                 <artifactId>dynamic-tp-spring-boot-starter-apollo</artifactId>
                 <version>${dynamic-tp-spring-boot-starter-apollo.version}</version>
             </dependency>

@@ -1,8 +1,9 @@
 package com.java3y.austin.support.utils;
 
-import com.dtp.core.DtpRegistry;
-import com.dtp.core.thread.DtpExecutor;
+import org.dromara.dynamictp.core.DtpRegistry;
+import org.dromara.dynamictp.core.executor.DtpExecutor;
 import com.java3y.austin.support.config.ThreadPoolExecutorShutdownDefinition;
+import org.dromara.dynamictp.core.support.ExecutorWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +24,7 @@ public class ThreadPoolUtils {
      * 2. 注册 线程池 被Spring管理，优雅关闭
      */
     public void register(DtpExecutor dtpExecutor) {
-        DtpRegistry.register(dtpExecutor, SOURCE_NAME);
+        DtpRegistry.registerExecutor(new ExecutorWrapper(dtpExecutor), SOURCE_NAME);
         shutdownDefinition.registryExecutor(dtpExecutor);
     }
 }

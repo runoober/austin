@@ -1,8 +1,8 @@
 package com.java3y.austin.web.controller;
 
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Slf4j
 @RestController
-@Api("健康检测")
+@Tag(name = "健康检测")
 public class HealthController {
     @GetMapping("/")
-    @ApiOperation("/健康检测")
+    @Operation(summary = "/健康检测")
     public String health() {
         return "success";
     }

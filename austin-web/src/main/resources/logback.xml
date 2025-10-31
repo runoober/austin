@@ -30,14 +30,14 @@
             <charset>UTF-8</charset>
         </encoder>
         <!-- 日志记录器的滚动策略，按日期，按大小记录 -->
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!-- 每天日志归档路径以及格式 -->
             <fileNamePattern>${log.path}/logs/austin-info-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
-            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>1000MB</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxFileSize>1000MB</maxFileSize>
             <!--日志文件保留天数-->
             <maxHistory>3</maxHistory>
+            <!-- 总文件大小限制 -->
+            <totalSizeCap>100GB</totalSizeCap>
         </rollingPolicy>
         <!-- 此日志文件只记录info级别的 -->
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
@@ -57,13 +57,13 @@
             <charset>UTF-8</charset> <!-- 此处设置字符集 -->
         </encoder>
         <!-- 日志记录器的滚动策略，按日期，按大小记录 -->
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/logs/austin-error-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
-            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>1000MB</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxFileSize>1000MB</maxFileSize>
             <!--日志文件保留天数-->
             <maxHistory>3</maxHistory>
+            <!-- 总文件大小限制 -->
+            <totalSizeCap>10GB</totalSizeCap>
         </rollingPolicy>
         <!-- 此日志文件只记录ERROR级别的 -->
         <filter class="ch.qos.logback.classic.filter.LevelFilter">

@@ -1,5 +1,7 @@
 package com.java3y.austin.common.dto.model;
 
+import com.alibaba.fastjson2.annotation.JSONType;
+
 import java.io.Serializable;
 
 /**
@@ -8,6 +10,20 @@ import java.io.Serializable;
  *
  * @author 3y
  */
+@JSONType(seeAlso = {
+        EmailContentModel.class,
+        SmsContentModel.class,
+        PushContentModel.class,
+        OfficialAccountsContentModel.class,
+        MiniProgramContentModel.class,
+        AlipayMiniProgramContentModel.class,
+        EnterpriseWeChatContentModel.class,
+        EnterpriseWeChatRobotContentModel.class,
+        FeiShuRobotContentModel.class,
+        DingDingRobotContentModel.class,
+        DingDingWorkContentModel.class,
+        ImContentModel.class
+})
 public class ContentModel implements Serializable {
 
 

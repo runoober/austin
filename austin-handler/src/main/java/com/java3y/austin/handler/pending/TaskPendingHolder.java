@@ -1,7 +1,7 @@
 package com.java3y.austin.handler.pending;
 
-import com.dtp.core.DtpRegistry;
-import com.dtp.core.thread.DtpExecutor;
+import org.dromara.dynamictp.core.DtpRegistry;
+import org.dromara.dynamictp.core.executor.DtpExecutor;
 import com.java3y.austin.handler.config.HandlerThreadPoolConfig;
 import com.java3y.austin.handler.utils.GroupIdMappingUtils;
 import com.java3y.austin.support.utils.ThreadPoolUtils;
@@ -9,9 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 
@@ -52,7 +50,7 @@ public class TaskPendingHolder {
      * @return
      */
     public ExecutorService route(String groupId) {
-        return DtpRegistry.getExecutor(HandlerThreadPoolConfig.PRE_FIX + groupId);
+        return (ExecutorService) DtpRegistry.getExecutor(HandlerThreadPoolConfig.PRE_FIX + groupId);
     }
 
 

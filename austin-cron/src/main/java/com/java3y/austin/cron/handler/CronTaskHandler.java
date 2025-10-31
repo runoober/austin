@@ -1,6 +1,6 @@
 package com.java3y.austin.cron.handler;
 
-import com.dtp.core.thread.DtpExecutor;
+import org.dromara.dynamictp.core.executor.DtpExecutor;
 import com.java3y.austin.cron.config.CronAsyncThreadPoolConfig;
 import com.java3y.austin.cron.service.TaskHandler;
 import com.java3y.austin.support.utils.ThreadPoolUtils;
