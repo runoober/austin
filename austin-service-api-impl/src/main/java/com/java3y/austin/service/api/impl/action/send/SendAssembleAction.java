@@ -6,7 +6,6 @@ import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
-import com.google.common.base.Throwables;
 import com.java3y.austin.common.constant.CommonConstant;
 import com.java3y.austin.common.domain.TaskInfo;
 import com.java3y.austin.common.dto.model.ContentModel;
@@ -27,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author 3y
@@ -84,16 +84,23 @@ public class SendAssembleAction implements BusinessProcess<SendTaskModel> {
         Long messageTemplateId = sendTaskModel.getMessageTemplateId();
 
         try {
-            Optional<MessageTemplate> messageTemplate = messageTemplateDao.findById(messageTemplateId);
-            if (!messageTemplate.isPresent() || messageTemplate.get().getIsDeleted().equals(CommonConstant.TRUE)) {
+            var messageTemplateOptional = messageTemplateDao.findById(messageTemplateId);
+            if (messageTemplateOptional.isEmpty()) {
                 context.setNeedBreak(true).setResponse(BasicResultVO.fail(RespStatusEnum.TEMPLATE_NOT_FOUND));
                 return;
             }
-            List<TaskInfo> taskInfos = assembleTaskInfo(sendTaskModel, messageTemplate.get());
+            
+            var messageTemplate = messageTemplateOptional.get();
+            if (messageTemplate.getIsDeleted().equals(CommonConstant.TRUE)) {
+                context.setNeedBreak(true).setResponse(BasicResultVO.fail(RespStatusEnum.TEMPLATE_NOT_FOUND));
+                return;
+            }
+            
+            List<TaskInfo> taskInfos = assembleTaskInfo(sendTaskModel, messageTemplate);
             sendTaskModel.setTaskInfo(taskInfos);
         } catch (Exception e) {
             context.setNeedBreak(true).setResponse(BasicResultVO.fail(RespStatusEnum.SERVICE_ERROR));
-            log.error("assemble task fail! templateId:{}, e:{}", messageTemplateId, Throwables.getStackTraceAsString(e));
+            log.error("assemble task fail! templateId:{}", messageTemplateId, e);
         }
 
     }
@@ -115,7 +122,8 @@ public class SendAssembleAction implements BusinessProcess<SendTaskModel> {
                     .bizId(messageParam.getBizId())
                     .messageTemplateId(messageTemplate.getId())
                     .businessId(TaskInfoUtils.generateBusinessId(messageTemplate.getId(), messageTemplate.getTemplateType()))
-                    .receiver(new HashSet<>(Arrays.asList(messageParam.getReceiver().split(String.valueOf(StrPool.C_COMMA)))))
+                    .receiver(Arrays.stream(messageParam.getReceiver().split(String.valueOf(StrPool.C_COMMA)))
+                            .collect(Collectors.toSet()))
                     .idType(messageTemplate.getIdType())
                     .sendChannel(messageTemplate.getSendChannel())
                     .templateType(messageTemplate.getTemplateType())

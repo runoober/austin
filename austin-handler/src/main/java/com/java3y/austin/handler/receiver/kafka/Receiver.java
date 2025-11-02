@@ -19,7 +19,6 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -42,18 +41,17 @@ public class Receiver implements MessageReceiver {
      */
     @KafkaListener(topics = "#{'${austin.business.topic.name}'}", containerFactory = "filterContainerFactory")
     public void consumer(ConsumerRecord<?, String> consumerRecord, @Header(KafkaHeaders.GROUP_ID) String topicGroupId) {
-        Optional<String> kafkaMessage = Optional.ofNullable(consumerRecord.value());
-        if (kafkaMessage.isPresent()) {
-
-            List<TaskInfo> taskInfoLists = JSON.parseArray(kafkaMessage.get(), TaskInfo.class);
-            String messageGroupId = GroupIdMappingUtils.getGroupIdByTaskInfo(CollUtil.getFirst(taskInfoLists.iterator()));
-            /**
-             * 每个消费者组 只消费 他们自身关心的消息
-             */
-            if (topicGroupId.equals(messageGroupId)) {
-                consumeService.consume2Send(taskInfoLists);
-            }
-        }
+        Optional.ofNullable(consumerRecord.value()).ifPresent(
+                message -> {
+                    // 使用 var 类型推断简化代码（JDK 10+）
+                    var taskInfoLists = JSON.parseArray(message, TaskInfo.class);
+                    var messageGroupId = GroupIdMappingUtils.getGroupIdByTaskInfo(CollUtil.getFirst(taskInfoLists.iterator()));
+                    // 每个消费者组 只消费 他们自身关心的消息
+                    if (topicGroupId.equals(messageGroupId)) {
+                        consumeService.consume2Send(taskInfoLists);
+                    }
+                }
+        );
     }
 
     /**
@@ -63,10 +61,9 @@ public class Receiver implements MessageReceiver {
      */
     @KafkaListener(topics = "#{'${austin.business.recall.topic.name}'}", groupId = "#{'${austin.business.recall.group.name}'}", containerFactory = "filterContainerFactory")
     public void recall(ConsumerRecord<?, String> consumerRecord) {
-        Optional<String> kafkaMessage = Optional.ofNullable(consumerRecord.value());
-        if (kafkaMessage.isPresent()) {
-            RecallTaskInfo recallTaskInfo = JSON.parseObject(kafkaMessage.get(), RecallTaskInfo.class);
+        Optional.ofNullable(consumerRecord.value()).ifPresent(message -> {
+            var recallTaskInfo = JSON.parseObject(message, RecallTaskInfo.class);
             consumeService.consume2recall(recallTaskInfo);
-        }
+        });
     }
 }

@@ -104,12 +104,12 @@ public class RedisReceiver implements MessageReceiver {
                         stringRedisTemplate.opsForList().rightPop(topic, 20, TimeUnit.SECONDS));
                 message.ifPresent(consumer);
             } catch (Exception e) {
-                log.error("RedisReceiver#receiveMessage Error receiving messages from Redis topic {}: {}",
-                        topic, e.getMessage());
+                log.error("RedisReceiver#receiveMessage Error receiving messages from Redis topic {}",
+                        topic, e);
                 try {
                     TimeUnit.SECONDS.sleep(10);
-                } catch (InterruptedException ex) {
-                    log.error("RedisReceiver#receiveMessage interrupted: {}", e.getMessage());
+                } catch (InterruptedException interruptedEx) {
+                    log.error("RedisReceiver#receiveMessage interrupted during retry wait", interruptedEx);
                     Thread.currentThread().interrupt();
                     break;
                 }

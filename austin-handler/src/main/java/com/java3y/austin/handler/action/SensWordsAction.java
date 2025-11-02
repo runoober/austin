@@ -34,80 +34,59 @@ public class SensWordsAction implements BusinessProcess<TaskInfo> {
      */
     @Override
     public void process(ProcessContext<TaskInfo> context) {
-        // 获取敏感词典
         Set<String> sensDict = Optional.ofNullable(redisTemplate.opsForSet().members(SensitiveWordsConfig.SENS_WORDS_DICT))
                 .orElse(Collections.emptySet());
-        // 如果敏感词典为空，不过滤
         if (ObjectUtils.isEmpty(sensDict)) {
             return;
         }
+        
+        ContentModel contentModel = context.getProcessModel().getContentModel();
         switch (context.getProcessModel().getMsgType()) {
-            // IM
-            case 10:
-                // 无文本内容，暂不做过滤处理
-                break;
-            // PUSH
-            case 20:
-                PushContentModel pushContentModel =
-                        (PushContentModel) context.getProcessModel().getContentModel();
-                pushContentModel.setContent(filter(pushContentModel.getContent(), sensDict));
-                break;
-            // SMS
-            case 30:
-                SmsContentModel smsContentModel =
-                        (SmsContentModel) context.getProcessModel().getContentModel();
-                smsContentModel.setContent(filter(smsContentModel.getContent(), sensDict));
-                break;
-            // EMAIL
-            case 40:
-                EmailContentModel emailContentModel =
-                        (EmailContentModel) context.getProcessModel().getContentModel();
-                emailContentModel.setContent(filter(emailContentModel.getContent(), sensDict));
-                break;
-            // OFFICIAL_ACCOUNT
-            case 50:
-                // 无文本内容，暂不做过滤处理
-                break;
-            // MINI_PROGRAM
-            case 60:
-                // 无文本内容，暂不做过滤处理
-                break;
-            // ENTERPRISE_WE_CHAT
-            case 70:
-                EnterpriseWeChatContentModel enterpriseWeChatContentModel =
-                        (EnterpriseWeChatContentModel) context.getProcessModel().getContentModel();
-                enterpriseWeChatContentModel.setContent(filter(enterpriseWeChatContentModel.getContent(), sensDict));
-                break;
-            // DING_DING_ROBOT
-            case 80:
-                DingDingRobotContentModel dingDingRobotContentModel =
-                        (DingDingRobotContentModel) context.getProcessModel().getContentModel();
-                dingDingRobotContentModel.setContent(filter(dingDingRobotContentModel.getContent(), sensDict));
-                break;
-            // DING_DING_WORK_NOTICE
-            case 90:
-                DingDingWorkContentModel dingDingWorkContentModel =
-                        (DingDingWorkContentModel) context.getProcessModel().getContentModel();
-                dingDingWorkContentModel.setContent(filter(dingDingWorkContentModel.getContent(), sensDict));
-                break;
-            // ENTERPRISE_WE_CHAT_ROBOT
-            case 100:
-                EnterpriseWeChatRobotContentModel enterpriseWeChatRobotContentModel =
-                        (EnterpriseWeChatRobotContentModel) context.getProcessModel().getContentModel();
-                enterpriseWeChatRobotContentModel.setContent(filter(enterpriseWeChatRobotContentModel.getContent(), sensDict));
-                break;
-            // FEI_SHU_ROBOT
-            case 110:
-                FeiShuRobotContentModel feiShuRobotContentModel =
-                        (FeiShuRobotContentModel) context.getProcessModel().getContentModel();
-                feiShuRobotContentModel.setContent(filter(feiShuRobotContentModel.getContent(), sensDict));
-                break;
-            // ALIPAY_MINI_PROGRAM
-            case 120:
-                // 无文本内容，暂不做过滤处理
-                break;
-            default:
-                break;
+            case 10, 50, 60, 120 -> {
+                // IM, OFFICIAL_ACCOUNT, MINI_PROGRAM, ALIPAY_MINI_PROGRAM: 无文本内容，暂不做过滤处理
+            }
+            case 20 -> {
+                if (contentModel instanceof PushContentModel pushContentModel) {
+                    pushContentModel.setContent(filter(pushContentModel.getContent(), sensDict));
+                }
+            }
+            case 30 -> {
+                if (contentModel instanceof SmsContentModel smsContentModel) {
+                    smsContentModel.setContent(filter(smsContentModel.getContent(), sensDict));
+                }
+            }
+            case 40 -> {
+                if (contentModel instanceof EmailContentModel emailContentModel) {
+                    emailContentModel.setContent(filter(emailContentModel.getContent(), sensDict));
+                }
+            }
+            case 70 -> {
+                if (contentModel instanceof EnterpriseWeChatContentModel enterpriseWeChatContentModel) {
+                    enterpriseWeChatContentModel.setContent(filter(enterpriseWeChatContentModel.getContent(), sensDict));
+                }
+            }
+            case 80 -> {
+                if (contentModel instanceof DingDingRobotContentModel dingDingRobotContentModel) {
+                    dingDingRobotContentModel.setContent(filter(dingDingRobotContentModel.getContent(), sensDict));
+                }
+            }
+            case 90 -> {
+                if (contentModel instanceof DingDingWorkContentModel dingDingWorkContentModel) {
+                    dingDingWorkContentModel.setContent(filter(dingDingWorkContentModel.getContent(), sensDict));
+                }
+            }
+            case 100 -> {
+                if (contentModel instanceof EnterpriseWeChatRobotContentModel enterpriseWeChatRobotContentModel) {
+                    enterpriseWeChatRobotContentModel.setContent(filter(enterpriseWeChatRobotContentModel.getContent(), sensDict));
+                }
+            }
+            case 110 -> {
+                if (contentModel instanceof FeiShuRobotContentModel feiShuRobotContentModel) {
+                    feiShuRobotContentModel.setContent(filter(feiShuRobotContentModel.getContent(), sensDict));
+                }
+            }
+            default -> {
+            }
         }
     }
 
@@ -163,11 +142,11 @@ public class SensWordsAction implements BusinessProcess<TaskInfo> {
      * @return
      */
     private TrieNode buildTrie(Set<String> sensDict) {
-        TrieNode root = new TrieNode();
-        for (String word : sensDict) {
-            TrieNode node = root;
-            for (char c : word.toCharArray()) {
-                node = node.children.computeIfAbsent(c, k -> new TrieNode());
+        var root = new TrieNode();
+        for (var word : sensDict) {
+            var node = root;
+            for (var c : word.toCharArray()) {
+                node = node.children.computeIfAbsent(c, _ -> new TrieNode());
             }
             node.isEnd = true;
         }

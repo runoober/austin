@@ -34,9 +34,9 @@ public class SpringEventBusReceiverListener implements ApplicationListener<Austi
     public void onApplicationEvent(AustinSpringEventBusEvent event) {
         String topic = event.getAustinSpringEventSource().getTopic();
         String jsonValue = event.getAustinSpringEventSource().getJsonValue();
-        if (topic.equals(sendTopic)) {
+        if (sendTopic.equals(topic)) {
             springEventBusReceiver.consume(JSON.parseArray(jsonValue, TaskInfo.class));
-        } else if (topic.equals(recallTopic)) {
+        } else if (recallTopic.equals(topic)) {
             springEventBusReceiver.recall(JSON.parseObject(jsonValue, RecallTaskInfo.class));
         }
     }

@@ -66,21 +66,20 @@ public class AccountUtils {
     @SuppressWarnings("unchecked")
     public <T> T getAccountById(Integer sendAccountId, Class<T> clazz) {
         try {
-            Optional<ChannelAccount> optionalChannelAccount = channelAccountDao.findById(Long.valueOf(sendAccountId));
-            if (optionalChannelAccount.isPresent()) {
-                ChannelAccount channelAccount = optionalChannelAccount.get();
-                if (clazz.equals(WxMaService.class)) {
-                    return (T) ConcurrentHashMapUtils.computeIfAbsent(miniProgramServiceMap, channelAccount, account -> initMiniProgramService(JSON.parseObject(account.getAccountConfig(), WeChatMiniProgramAccount.class)));
-                } else if (clazz.equals(WxMpService.class)) {
-                    return (T) ConcurrentHashMapUtils.computeIfAbsent(officialAccountServiceMap, channelAccount, account -> initOfficialAccountService(JSON.parseObject(account.getAccountConfig(), WeChatOfficialAccount.class)));
-                } else {
-                    return JSON.parseObject(channelAccount.getAccountConfig(), clazz);
-                }
-            }
+            return channelAccountDao.findById(Long.valueOf(sendAccountId))
+                    .map(channelAccount -> {
+                        if (WxMaService.class.equals(clazz)) {
+                            return (T) miniProgramServiceMap.computeIfAbsent(channelAccount, account -> initMiniProgramService(JSON.parseObject(account.getAccountConfig(), WeChatMiniProgramAccount.class)));
+                        } else if (WxMpService.class.equals(clazz)) {
+                            return (T) officialAccountServiceMap.computeIfAbsent(channelAccount, account -> initOfficialAccountService(JSON.parseObject(account.getAccountConfig(), WeChatOfficialAccount.class)));
+                        }
+                        return JSON.parseObject(channelAccount.getAccountConfig(), clazz);
+                    })
+                    .orElse(null);
         } catch (Exception e) {
             log.error("AccountUtils#getAccount fail! e:{}", Throwables.getStackTraceAsString(e));
+            return null;
         }
-        return null;
     }
 
     /**

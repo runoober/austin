@@ -1,6 +1,7 @@
 package com.java3y.austin.support.config;
 
 
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.ConnectionPool;
 import okhttp3.OkHttpClient;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +24,7 @@ import java.util.concurrent.TimeUnit;
  * @author 3y
  * @date 2021/11/4
  */
+@Slf4j
 @Configuration
 public class OkHttpConfiguration {
 
@@ -50,7 +52,7 @@ public class OkHttpConfiguration {
                 .connectTimeout(connectTimeout, TimeUnit.SECONDS)
                 .readTimeout(readTimeout, TimeUnit.SECONDS)
                 .writeTimeout(writeTimeout, TimeUnit.SECONDS)
-                .hostnameVerifier((hostname, session) -> true)
+                .hostnameVerifier((_, __) -> true)
                 .build();
     }
 
@@ -82,9 +84,9 @@ public class OkHttpConfiguration {
             sslContext.init(null, new TrustManager[]{x509TrustManager()}, new SecureRandom());
             return sslContext.getSocketFactory();
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
-            e.printStackTrace();
+            log.error("Failed to create SSL socket factory", e);
+            throw new IllegalStateException("Failed to initialize SSL context", e);
         }
-        return null;
     }
 
     @Bean

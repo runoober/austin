@@ -29,12 +29,12 @@ public class SimpleLimitService extends AbstractLimitService {
 
     @Override
     public Set<String> limitFilter(AbstractDeduplicationService service, TaskInfo taskInfo, DeduplicationParam param) {
-        Set<String> filterReceiver = new HashSet<>(taskInfo.getReceiver().size());
+        var filterReceiver = new HashSet<String>(taskInfo.getReceiver().size());
         // 获取redis记录
-        Map<String, String> readyPutRedisReceiver = new HashMap<>(taskInfo.getReceiver().size());
+        var readyPutRedisReceiver = new HashMap<String, String>(taskInfo.getReceiver().size());
         //redis数据隔离
-        List<String> keys = deduplicationAllKey(service, taskInfo).stream().map(key -> LIMIT_TAG + key).collect(Collectors.toList());
-        Map<String, String> inRedisValue = redisUtils.mGet(keys);
+        var keys = deduplicationAllKey(service, taskInfo).stream().map(key -> LIMIT_TAG + key).collect(Collectors.toList());
+        var inRedisValue = redisUtils.mGet(keys);
 
         for (String receiver : taskInfo.getReceiver()) {
             String key = LIMIT_TAG + deduplicationSingleKey(service, taskInfo, receiver);
@@ -62,11 +62,21 @@ public class SimpleLimitService extends AbstractLimitService {
      */
     private void putInRedis(Map<String, String> readyPutRedisReceiver,
                             Map<String, String> inRedisValue, Long deduplicationTime) {
-        Map<String, String> keyValues = new HashMap<>(readyPutRedisReceiver.size());
-        for (Map.Entry<String, String> entry : readyPutRedisReceiver.entrySet()) {
-            String key = entry.getValue();
-            if (Objects.nonNull(inRedisValue.get(key))) {
-                keyValues.put(key, String.valueOf(Integer.parseInt(inRedisValue.get(key)) + 1));
+        var keyValues = new HashMap<String, String>(readyPutRedisReceiver.size());
+        for (var entry : readyPutRedisReceiver.entrySet()) {
+            var key = entry.getValue();
+            var existingValue = inRedisValue.get(key);
+            if (Objects.nonNull(existingValue)) {
+                try {
+                    long currentCount = Long.parseLong(existingValue);
+                    long newCount = currentCount + 1;
+                    if (newCount < currentCount) {
+                        newCount = Long.MAX_VALUE;
+                    }
+                    keyValues.put(key, String.valueOf(newCount));
+                } catch (NumberFormatException e) {
+                    keyValues.put(key, String.valueOf(CommonConstant.TRUE));
+                }
             } else {
                 keyValues.put(key, String.valueOf(CommonConstant.TRUE));
             }

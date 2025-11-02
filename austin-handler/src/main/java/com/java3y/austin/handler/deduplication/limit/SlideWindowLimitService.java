@@ -51,15 +51,14 @@ public class SlideWindowLimitService extends AbstractLimitService {
      */
     @Override
     public Set<String> limitFilter(AbstractDeduplicationService service, TaskInfo taskInfo, DeduplicationParam param) {
+        var filterReceiver = new HashSet<String>(taskInfo.getReceiver().size());
+        var nowTime = System.currentTimeMillis();
+        for (var receiver : taskInfo.getReceiver()) {
+            var key = LIMIT_TAG + deduplicationSingleKey(service, taskInfo, receiver);
+            var scoreValue = String.valueOf(IdUtil.getSnowflake().nextId());
+            var score = String.valueOf(nowTime);
 
-        Set<String> filterReceiver = new HashSet<>(taskInfo.getReceiver().size());
-        long nowTime = System.currentTimeMillis();
-        for (String receiver : taskInfo.getReceiver()) {
-            String key = LIMIT_TAG + deduplicationSingleKey(service, taskInfo, receiver);
-            String scoreValue = String.valueOf(IdUtil.getSnowflake().nextId());
-            String score = String.valueOf(nowTime);
-
-            final Boolean result = redisUtils.execLimitLua(redisScript, Collections.singletonList(key),
+            var result = redisUtils.execLimitLua(redisScript, Collections.singletonList(key),
                     String.valueOf(param.getDeduplicationTime() * 1000), score, String.valueOf(param.getCountNum()), scoreValue);
             if (Boolean.TRUE.equals(result)) {
                 filterReceiver.add(receiver);

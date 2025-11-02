@@ -80,8 +80,8 @@ public class DataServiceImpl implements DataService {
 
         // 获取businessId并获取模板信息
         businessId = getRealBusinessId(businessId);
-        Optional<MessageTemplate> optional = messageTemplateDao.findById(TaskInfoUtils.getMessageTemplateIdFromBusinessId(Long.valueOf(businessId)));
-        if (!optional.isPresent()) {
+        var messageTemplateOptional = messageTemplateDao.findById(TaskInfoUtils.getMessageTemplateIdFromBusinessId(Long.valueOf(businessId)));
+        if (messageTemplateOptional.isEmpty()) {
             return null;
         }
 
@@ -92,7 +92,7 @@ public class DataServiceImpl implements DataService {
          */
         Map<Object, Object> anchorResult = redisUtils.hGetAll(getRealBusinessId(businessId));
 
-        return Convert4Amis.getEchartsVo(anchorResult, optional.get(), businessId);
+        return Convert4Amis.getEchartsVo(anchorResult, messageTemplateOptional.get(), businessId);
     }
 
     @Override
